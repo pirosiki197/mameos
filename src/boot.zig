@@ -10,6 +10,7 @@ extern var __bss: [*]u8;
 extern const __bss_end: anyopaque;
 
 pub const std_options = klog.default_log_options;
+pub const panic = mame.panic.panic_fn;
 
 fn kernelMain() !void {
     const bss_len = @intFromPtr(&__bss_end) - @intFromPtr(&__bss);
@@ -20,10 +21,11 @@ fn kernelMain() !void {
     while (true) {}
 }
 
-export fn trampoline() void {
+export fn trampoline() noreturn {
     kernelMain() catch {
-        while (true) {}
+        @panic("Exiting...");
     };
+    unreachable;
 }
 
 export fn boot() linksection(".text.boot") callconv(.naked) noreturn {
