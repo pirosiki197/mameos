@@ -16,7 +16,8 @@ pub fn build(b: *std.Build) void {
     );
     b.getInstallStep().dependOn(&install_kernel.step);
 
-    setupQemuStep(b, kernel);
+    const run_step = setupQemuStep(b, kernel);
+    run_step.dependOn(&install_kernel.step);
 
     const mod_tests = b.addTest(.{
         .root_module = mame_mod,
@@ -73,7 +74,7 @@ fn createKernel(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.b
     return kernel;
 }
 
-fn setupQemuStep(b: *std.Build, kernel: *std.Build.Step.Compile) void {
+fn setupQemuStep(b: *std.Build, kernel: *std.Build.Step.Compile) *std.Build.Step {
     const run_step = b.step("run", "Run mameOS in QEMU");
 
     const qemu = b.addSystemCommand(&.{"qemu-system-riscv64"});
@@ -87,4 +88,6 @@ fn setupQemuStep(b: *std.Build, kernel: *std.Build.Step.Compile) void {
     qemu.addArtifactArg(kernel);
 
     run_step.dependOn(&qemu.step);
+
+    return run_step;
 }
