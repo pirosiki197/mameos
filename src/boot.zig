@@ -20,10 +20,10 @@ fn kernelMain() !void {
 
     mame.trap.init();
 
-    log.info("booted!", .{});
     const memory_len = @intFromPtr(&__free_ram_end) - @intFromPtr(&__free_ram);
+    const memory: [*]align(4096) u8 = @ptrCast(@alignCast(&__free_ram));
 
-    var page_allocator = mame.mem.initPageAllocator(@ptrCast(@alignCast(&__free_ram)), memory_len);
+    var page_allocator = mame.mem.initPageAllocator(memory[0..memory_len]);
     const allocator = page_allocator.allocator();
     const buf = allocator.alloc(u8, 128) catch {
         @panic("failed to alloc");
