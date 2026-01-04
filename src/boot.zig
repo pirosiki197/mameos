@@ -16,6 +16,8 @@ fn kernelMain() !void {
     const bss_len = @intFromPtr(&__bss_end) - @intFromPtr(&__bss);
     @memset(__bss[0..bss_len], 0);
 
+    mame.trap.init();
+
     log.info("hello, world!", .{});
 
     while (true) {}
