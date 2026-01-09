@@ -216,7 +216,7 @@ fn Queue(T: type) type {
 
         pub fn push(self: *Self, v: T) !void {
             if (self.size == self.data.len) {
-                const new_data = try self.allocator.realloc(self.data, 2 * self.data.len);
+                const new_data = try self.allocator.alloc(T, 2 * self.data.len);
                 const first_len = self.data.len - self._head;
                 @memcpy(new_data[0..first_len], self.data[self._head..self.data.len]);
                 const second_len = self._head;
